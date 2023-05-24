@@ -51,9 +51,13 @@ struct ContentView: View {
                             ForEach(usedWords, id: \.self) { word in
                                 HStack {
                                     Image(systemName: "\(word.count).circle")
-                                    Text("\(word)")
+                                    Spacer()
+                                    Text(word)
                                 }
                                 .foregroundColor(.primary)
+                                .accessibilityElement(children: .combine)
+                                .accessibilityLabel("\(word), \(word.count) letters")
+//                                .accessibilityHint("\(word.count) letters")
                             }
                         }
                     }
@@ -70,14 +74,16 @@ struct ContentView: View {
                         Text(errorMessage)
                     }
                     .safeAreaInset(edge: .bottom) {
-                        Text("Your score is \(score)")
-                            .padding()
-                            .font(.headline)
-                            .frame(width: 175, height: 100)
-                            .foregroundColor(Color.yellow)
-                            .background(Color.red)
-                            .clipShape(Capsule())
-                            .padding()
+                        HStack {
+                            Text("Your score is \(score)")
+                                .padding()
+                                .font(.headline)
+                                .frame(width: 175, height: 100)
+                                .foregroundColor(Color.yellow)
+                                .background(Color.red)
+                                .clipShape(Capsule())
+                                .padding()
+                        }
                     }
                     .padding()
                     
@@ -91,15 +97,15 @@ struct ContentView: View {
             self.focusedScreen = true
             self.focusedField = false
         }
-
+        
     }
     
     func addNewWord() {
         // lowercase and trim the word, to make sure we don't add duplicate words with case differences
         let answer = newWord.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
         // exit if the remaining string is empty
-        guard answer.count > 2 && answer != rootWord else { return }
-                
+        guard answer.count > 1 && answer != rootWord else { return }
+        
         guard isOriginal(word: answer) else {
             wordError(title: "Word used already", message: "Be more original")
             return
@@ -156,7 +162,7 @@ struct ContentView: View {
                 tempWord.remove(at: pos)
             } else {
                 newWord = ""
-
+                
                 return false
             }
         }
@@ -170,7 +176,7 @@ struct ContentView: View {
         let misspelledRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "en")
         
         newWord = ""
-
+        
         return misspelledRange.location == NSNotFound
     }
     
